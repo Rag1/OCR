@@ -1,9 +1,14 @@
 #include "opencv2/opencv.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
+#include<fstream>
+#include<iostream>
 using namespace std;
 using namespace cv;
-
+struct data
+{
+  int img[20][20];
+} s1;
 int main()
 {
   int r,s;
@@ -36,17 +41,20 @@ int main()
     for( size_t i = 0; i < contours.size(); i++ )
        { approxPolyDP( Mat(contours[i]), contours_poly[i], 3, true );
          boundRect[i] = boundingRect( Mat(contours_poly[i]) );
-cout<<i<<endl;
        }
-
+ofstream f("segments.dat",ios::binary);
 Mat m1(20,20,CV_8UC1);
 for(size_t j=0;j<contours.size();j++)
 {
 
       cv::Mat crop = img(boundRect[j]);
 resize(crop,m1,m1.size());
-//insert file handling stuff
+for(int x=0;x<20;x++)
+for(int y=0;y<20;y++)
+s1.img[y][x]=m1.at<uchar>(y,x);
+f.write((char*)&s1,sizeof(s1));
 }
+f.close();
   imshow("mser", img);
 waitKey(0);
   return 0;
